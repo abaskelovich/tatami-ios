@@ -1,5 +1,3 @@
-# TASKS — Tatami iOS
+# Deprecated
 
-- [ ] Выбрать minimum iOS version и signing strategy.
-- [ ] Реализовать capture/history shell.
-- [ ] Подключить `packages/api-contracts` после Server contract freeze.
+This compatibility file has moved to [docs/BACKLOG.md](docs/BACKLOG.md). Update links to the canonical file; do not add tasks here.

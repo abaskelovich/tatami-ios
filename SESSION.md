@@ -1,11 +1,3 @@
-# SESSION — Tatami iOS
+# Deprecated
 
-**Status:** deferred
-**Opened:** 2026-07-19
-**Closed:** —
-**Goal:** define the native iOS capture and Server integration boundary
-**Next action:** choose the SwiftUI/native capture and signing scope
-
-**Date:** 2026-07-19
-
-Создана граница проекта. Native implementation не начиналась.
+Current state: [STATUS.md](STATUS.md). Migrated handoff: [docs/history/legacy-session-migrated-2026-07-31.md](docs/history/legacy-session-migrated-2026-07-31.md). Do not update this compatibility file.
