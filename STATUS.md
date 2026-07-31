@@ -11,7 +11,7 @@ session:
   next_action: "choose the SwiftUI/native capture and signing scope"
 workspace:
   branch: "master"
-  base_commit: "7c6000627ae700614c6e62263bc8bb6185641708"
+  base_commit: "6f5d79d5e1aa442bbbe70244c683837ce9356f2f"
   dirty: true
 release:
   target: null
