@@ -8,6 +8,21 @@
 - Сетевые вызовы идут через versioned API contract.
 - Секреты, audio и transcripts не коммитить.
 
+## Canonical task-thread routing
+
+This directory is owned by the canonical task thread Tatami-iOS. Continue
+that existing project thread for all work in this repository. Before sending
+delegated work, verify the thread identity, repository path, branch, and scope.
+Use the project thread messaging mechanism; do not replace it with a generic
+spawned agent or a nickname-only assignment.
+
+Create a new agent only for a genuinely isolated review, or when this canonical
+thread is unavailable and the user explicitly authorizes creating one. If the
+correct thread cannot be found, report a blocker and wait. Every handoff must
+name the project, ownership boundary, expected checks, documentation and commit
+requirements, and expected return format. Verify the returned thread identity
+and changed scope before accepting the result.
+
 ## Canonical document order
 
 1. `AGENTS.md`
