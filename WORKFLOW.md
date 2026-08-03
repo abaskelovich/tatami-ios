@@ -39,10 +39,11 @@ in `../docs/workflow/`; local detailed runbooks may live in `docs/workflow/`.
 
 ## Repository and safety boundary
 
-Work only in the repository placed in scope. Android, Web and Windows are
-independent gitlink repositories: commit there first, then update the root
-gitlink separately. Never include unrelated local changes, secrets, raw logs,
-audio, transcripts, tokens or identifiers.
+Work only in the repository placed in scope. Android, Web, and Windows are
+ordinary directories in the Tatami monorepo and use the root Git history. They
+have no nested `.git` or top-level gitlinks; platform ownership and release
+gates remain independent. Never include unrelated local changes, secrets, raw
+logs, audio, transcripts, tokens or identifiers.
 
 ## Status contract
 
