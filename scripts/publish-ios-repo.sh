@@ -5,6 +5,7 @@
 # deterministic, so repeated publishes stay fast-forward.
 set -euo pipefail
 remote="${1:-ios}"
+shift $(( $# > 0 ? 1 : 0 ))
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 noreply="$(gh api user --jq '"\(.id)+\(.login)@users.noreply.github.com"')"
