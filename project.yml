@@ -1,0 +1,79 @@
+name: Tatami
+options:
+  minimumXcodeGenVersion: 2.43.0
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: ru
+settingGroups:
+  unsignedIOS:
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    CODE_SIGNING_ALLOWED: "NO"
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGN_IDENTITY: ""
+    GENERATE_INFOPLIST_FILE: "YES"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  TatamiCore:
+    path: Packages/TatamiCore
+targets:
+  Tatami:
+    type: application
+    platform: iOS
+    sources:
+      - App
+    dependencies:
+      - package: TatamiCore
+    settings:
+      groups: [unsignedIOS]
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tatami.assistant
+        PRODUCT_NAME: Tatami
+        INFOPLIST_KEY_CFBundleDisplayName: Tatami
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Tatami использует микрофон, чтобы записывать голос и превращать его в текст."
+        INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SUPPORTS_MACCATALYST: "NO"
+  TatamiTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests
+    dependencies:
+      - target: Tatami
+      - package: TatamiCore
+    settings:
+      groups: [unsignedIOS]
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tatami.assistant.tests
+  TatamiUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - UITests
+    dependencies:
+      - target: Tatami
+    settings:
+      groups: [unsignedIOS]
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tatami.assistant.uitests
+schemes:
+  Tatami:
+    build:
+      targets:
+        Tatami: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - TatamiTests
+        - TatamiUITests
+    archive:
+      config: Release
+    management:
+      shared: true

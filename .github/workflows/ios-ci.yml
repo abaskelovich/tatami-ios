@@ -1,0 +1,107 @@
+name: iOS CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODEGEN_VERSION: "2.43.0"
+
+jobs:
+  core-linux:
+    runs-on: ubuntu-latest
+    container: swift:6.1
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Foundation core on Linux
+        working-directory: Packages/TatamiCore
+        run: swift test
+
+  ios:
+    needs: core-linux
+    runs-on: macos-26
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: |
+          sw_vers
+          ls -d /Applications/Xcode*.app
+          selected="$(python3 - <<'PY'
+          import glob
+          import re
+          paths = glob.glob('/Applications/Xcode_26*.app')
+          def version(path):
+              name = path.rsplit('/', 1)[-1]
+              return tuple(map(int, re.findall(r'\d+', name)))
+          print(max(paths, key=version) if paths else '')
+          PY
+          )"
+          if [ -n "$selected" ]; then
+            sudo xcode-select -s "$selected/Contents/Developer"
+          fi
+          xcodebuild -version
+      - name: Install pinned XcodeGen
+        run: |
+          curl --fail --location --retry 3 \
+            "https://github.com/yonaskolb/XcodeGen/releases/download/${XCODEGEN_VERSION}/xcodegen.zip" \
+            -o "$RUNNER_TEMP/xcodegen.zip"
+          unzip -q "$RUNNER_TEMP/xcodegen.zip" -d "$RUNNER_TEMP/xcodegen"
+          binary="$(find "$RUNNER_TEMP/xcodegen" -type f -name xcodegen -print -quit)"
+          test -n "$binary"
+          chmod +x "$binary"
+          "$binary" --version
+          echo "$(dirname "$binary")" >> "$GITHUB_PATH"
+      - name: Generate project
+        run: xcodegen generate
+      - name: Select available iPhone simulator
+        id: simulator
+        run: |
+          udid="$(bash scripts/select-simulator.sh)"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+      - name: Run simulator tests
+        run: |
+          mkdir -p build
+          xcodebuild test -project Tatami.xcodeproj -scheme Tatami \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -resultBundlePath build/Tests.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Archive unsigned device app
+        run: |
+          xcodebuild archive -project Tatami.xcodeproj -scheme Tatami \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -archivePath build/Tatami.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p build/ipa/Payload
+          cp -R build/Tatami.xcarchive/Products/Applications/Tatami.app build/ipa/Payload/
+          cd build/ipa
+          zip -qry ../Tatami-unsigned.ipa Payload
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tatami-unsigned
+          path: build/Tatami-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tatami-test-results
+          path: build/Tests.xcresult
+          if-no-files-found: warn
+          retention-days: 7
